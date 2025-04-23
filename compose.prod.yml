@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  magl-backend:
+    image: ghcr.io/lecterkn/myanimegamelist-backend
+    container_name: magl_backend
+    restart: always
+    env_file:
+     - ./.env
+    depends_on:
+      magl-mysql:
+        condition: service_healthy
+      magl-redis:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:8993:8993
+    networks:
+      - internal_network
+    volumes:
+      - ./.env:/app/.env
+      - ./dbconfig.yml:/app/dbconfig.yml
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8993/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  magl-frontend:
+    image: ghcr.io/lecterkn/myanimegamelist-frontend
+    container_name: magl_frontend
+    restart: always
+    depends_on:
+      magl-backend:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:3000:3000
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5

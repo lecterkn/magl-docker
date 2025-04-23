@@ -1,0 +1,5 @@
+# Environments
+.env
+dbconfig.yml
+env/.env.local
+env/.env.prod

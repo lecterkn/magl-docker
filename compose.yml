@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  magl-mysql:
+    image: mysql:latest
+    container_name: magl-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MY_ANIMEGAME_LIST_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MY_ANIMEGAME_LIST_MYSQL_DATABASE}
+      MYSQL_USER: ${MY_ANIMEGAME_LIST_MYSQL_USER}
+      MYSQL_PASSWORD: ${MY_ANIMEGAME_LIST_MYSQL_PASSWORD}
+    ports:
+      - "127.0.0.1:3326:3306"
+    networks:
+      - internal_network
+    volumes:
+      - magl_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MY_ANIMEGAME_LIST_MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  magl-redis:
+    image: redis:7.2
+    container_name: magl-redis
+    restart: always
+    ports:
+      - "127.0.0.1:6388:6379"
+    networks:
+      - internal_network
+    volumes:
+      - magl_redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${MY_ANIMEGAME_LIST_REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  internal_network:
+    driver: bridge
+  app_network:
+    driver: bridge
+volumes:
+  magl_mysql_data:
+  magl_redis_data:
