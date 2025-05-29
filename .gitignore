@@ -3,3 +3,9 @@
 dbconfig.yml
 env/.env.local
 env/.env.prod
+
+# Terraform
+terraform.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
