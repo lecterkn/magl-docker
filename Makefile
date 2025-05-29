@@ -5,7 +5,7 @@ prod:
 local:
 	cp ./env/.env.local .env && \
 		source .env && \
-		docker-compose -f compose.yml up 
+		docker-compose -f compose.yml -f compose.local.yml up 
 dev:
 	${MAKE} local
 pull:
